@@ -10,21 +10,26 @@ permissions:
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create/overwrite UI files and update project
-        shell: pwsh
+      # 1) Create a PowerShell script as a file (using bash here-doc)
+      - name: Write bootstrap.ps1
+        shell: bash
         run: |
+          set -e
+          cat > bootstrap.ps1 << 'PS1_EOF'
           $ErrorActionPreference = 'Stop'
+
           function Info($m){Write-Host "[INFO] $m" -ForegroundColor Cyan}
           function Ok($m){Write-Host "[ OK ] $m" -ForegroundColor Green}
           function Warn($m){Write-Host "[WARN] $m" -ForegroundColor Yellow}
           function Err($m){Write-Host "[ERR ] $m" -ForegroundColor Red}
 
           $ui = "TeklaAI.UI"
-          if (-not (Test-Path $ui)) { Err "Cannot find $ui folder in the repo root."; exit 1 }
+          if (-not (Test-Path $ui)) { Err "Cannot find $ui folder in repo root."; exit 1 }
 
           # --- Ensure folders exist ---
           $folders = @("$ui/Views","$ui/ViewModels","$ui/Helpers","$ui/Converters")
@@ -32,411 +37,60 @@ jobs:
             if(-not (Test-Path $f)){ New-Item -ItemType Directory -Path $f | Out-Null; Ok "Created $f" }
           }
 
-          # --- App.xaml (BundledTheme + MaterialDesign2.Defaults) ---
+          # --- App.xaml (MaterialDesign BundledTheme + MD2 defaults) ---
           @'
-<Application x:Class="TeklaAI.UI.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             StartupUri="Views/MainWindow.xaml">
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Light"
-                                             PrimaryColor="Blue"
-                                             SecondaryColor="LightBlue" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
-</Application>
-'@ | Set-Content -Path "$ui/App.xaml" -Encoding UTF8
+          <Application x:Class="TeklaAI.UI.App"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                       StartupUri="Views/MainWindow.xaml">
+              <Application.Resources>
+                  <ResourceDictionary>
+                      <ResourceDictionary.MergedDictionaries>
+                          <materialDesign:BundledTheme BaseTheme="Light"
+                                                       PrimaryColor="Blue"
+                                                       SecondaryColor="LightBlue" />
+                          <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+                      </ResourceDictionary.MergedDictionaries>
+                  </ResourceDictionary>
+              </Application.Resources>
+          </Application>
+          '@ | Set-Content -Path "$ui/App.xaml" -Encoding UTF8
 
-          # --- MainWindow.xaml (under Views) ---
+          # --- MainWindow.xaml under Views ---
           @'
-<Window x:Class="TeklaAI.UI.Views.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:conv="clr-namespace:TeklaAI.UI.Converters"
-        Title="Tekla AI Automation System"
-        Height="800" Width="1200"
-        WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource MaterialDesignPaper}">
-    <Window.Resources>
-        <conv:BoolToStatusConverter x:Key="BoolToStatusConverter"/>
-    </Window.Resources>
+          <Window x:Class="TeklaAI.UI.Views.MainWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                  xmlns:conv="clr-namespace:TeklaAI.UI.Converters"
+                  Title="Tekla AI Automation System"
+                  Height="800" Width="1200"
+                  WindowStartupLocation="CenterScreen"
+                  Background="{DynamicResource MaterialDesignPaper}">
+              <Window.Resources>
+                  <conv:BoolToStatusConverter x:Key="BoolToStatusConverter"/>
+              </Window.Resources>
 
-    <DockPanel>
-        <!-- Top -->
-        <ToolBar DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignCardBackground}">
-            <TextBlock Text="Tekla AI Automation System" FontSize="18" FontWeight="Bold" Margin="10"/>
-        </ToolBar>
+              <DockPanel>
+                  <!-- Top -->
+                  <ToolBar DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignCardBackground}">
+                      <TextBlock Text="Tekla AI Automation System" FontSize="18" FontWeight="Bold" Margin="10"/>
+                  </ToolBar>
 
-        <!-- Bottom -->
-        <StatusBar DockPanel.Dock="Bottom" Background="{DynamicResource MaterialDesignCardBackground}">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" Margin="10,0,20,0"/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding IsConnectedToTekla, Converter={StaticResource BoolToStatusConverter}}"/>
-            </StatusBarItem>
-        </StatusBar>
+                  <!-- Bottom -->
+                  <StatusBar DockPanel.Dock="Bottom" Background="{DynamicResource MaterialDesignCardBackground}">
+                      <StatusBarItem>
+                          <TextBlock Text="{Binding StatusMessage}" Margin="10,0,20,0"/>
+                      </StatusBarItem>
+                      <StatusBarItem>
+                          <TextBlock Text="{Binding IsConnectedToTekla, Converter={StaticResource BoolToStatusConverter}}"/>
+                      </StatusBarItem>
+                  </StatusBar>
 
-        <!-- Left Nav -->
-        <StackPanel DockPanel.Dock="Left" Width="220" Background="{DynamicResource MaterialDesignCardBackground}">
-            <Button Content="Dashboard"      Command="{Binding NavigateDashboardCommand}" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
-            <Button Content="Drawing"        Command="{Binding NavigateDrawingCommand}"   Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
-            <Button Content="Modelling"      Command="{Binding NavigateModellingCommand}" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
-            <Button Content="Tekla Export"   Command="{Binding NavigateExportCommand}"    Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
-            <Button Content="Settings"       Command="{Binding NavigateSettingsCommand}"  Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
-            <Separator Margin="10"/>
-            <Button Content="Connect to Tekla" Command="{Binding ConnectToTeklaCommand}"  Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
-        </StackPanel>
-
-        <!-- Right Logs -->
-        <ScrollViewer DockPanel.Dock="Right" Width="320" Background="{DynamicResource MaterialDesignCardBackground}">
-            <ItemsControl ItemsSource="{Binding LogMessages}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="6" Padding="6" CornerRadius="4" Background="{DynamicResource MaterialDesignPaper}">
-                            <TextBlock Text="{Binding Message}" Foreground="{Binding LogColor}"/>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-
-        <!-- Center -->
-        <ContentControl Content="{Binding CurrentView}" Margin="10"/>
-    </DockPanel>
-</Window>
-'@ | Set-Content -Path "$ui/Views/MainWindow.xaml" -Encoding UTF8
-
-          # --- MainWindow.xaml.cs ---
-          @'
-using System.Windows;
-using TeklaAI.UI.ViewModels;
-
-namespace TeklaAI.UI.Views
-{
-    /// <summary>Main shell window.</summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
-            DataContext = new MainWindowViewModel();
-        }
-    }
-}
-'@ | Set-Content -Path "$ui/Views/MainWindow.xaml.cs" -Encoding UTF8
-
-          # --- BaseViewModel.cs ---
-          @'
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
-namespace TeklaAI.UI.ViewModels
-{
-    /// <summary>INotifyPropertyChanged base.</summary>
-    public class BaseViewModel : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void SetProperty<T>(ref T field, T value, [CallerMemberName]string name=null)
-        {
-            if (Equals(field, value)) return;
-            field = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-    }
-}
-'@ | Set-Content -Path "$ui/ViewModels/BaseViewModel.cs" -Encoding UTF8
-
-          # --- RelayCommand.cs ---
-          @'
-using System;
-using System.Windows.Input;
-
-namespace TeklaAI.UI.Helpers
-{
-    /// <summary>Simple ICommand implementation for MVVM.</summary>
-    public class RelayCommand : ICommand
-    {
-        private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
-
-        public RelayCommand(Action execute, Func<bool> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
-        public void Execute(object parameter) => _execute();
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-    }
-}
-'@ | Set-Content -Path "$ui/Helpers/RelayCommand.cs" -Encoding UTF8
-
-          # --- LogEntry.cs (color-coded) ---
-          @'
-using System.Windows.Media;
-
-namespace TeklaAI.UI.Helpers
-{
-    public enum LogType { Info, Success, Error, Warning, Debug }
-
-    /// <summary>UI log line with color.</summary>
-    public class LogEntry
-    {
-        public string Message { get; }
-        public LogType Type { get; }
-
-        public Brush LogColor => Type switch
-        {
-            LogType.Info    => Brushes.SteelBlue,
-            LogType.Success => Brushes.SeaGreen,
-            LogType.Error   => Brushes.IndianRed,
-            LogType.Warning => Brushes.DarkOrange,
-            LogType.Debug   => Brushes.Gray,
-            _               => Brushes.Black
-        };
-
-        public LogEntry(string message, LogType type)
-        {
-            Message = message;
-            Type = type;
-        }
-    }
-}
-'@ | Set-Content -Path "$ui/Helpers/LogEntry.cs" -Encoding UTF8
-
-          # --- BoolToStatusConverter.cs ---
-          @'
-using System;
-using System.Globalization;
-using System.Windows.Data;
-
-namespace TeklaAI.UI.Converters
-{
-    /// <summary>bool -> Connected/Disconnected.</summary>
-    public class BoolToStatusConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => value is bool b && b ? "Connected" : "Disconnected";
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotSupportedException();
-    }
-}
-'@ | Set-Content -Path "$ui/Converters/BoolToStatusConverter.cs" -Encoding UTF8
-
-          # --- MainWindowViewModel.cs ---
-          @'
-using System;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
-using TeklaAI.API.Wrappers;
-using TeklaAI.Core.Utilities;
-using TeklaAI.UI.Helpers;
-
-namespace TeklaAI.UI.ViewModels
-{
-    /// <summary>Main VM: navigation, Tekla connect, logs.</summary>
-    public class MainWindowViewModel : BaseViewModel
-    {
-        private readonly Logger _logger = Logger.Instance;
-        private readonly TeklaConnection _tekla = new TeklaConnection();
-
-        public ObservableCollection<LogEntry> LogMessages { get; } = new();
-
-        private UserControl _currentView;
-        public UserControl CurrentView
-        {
-            get => _currentView;
-            set => SetProperty(ref _currentView, value);
-        }
-
-        private bool _isConnected;
-        public bool IsConnectedToTekla
-        {
-            get => _isConnected;
-            set => SetProperty(ref _isConnected, value);
-        }
-
-        private string _statusMessage = "Ready";
-        public string StatusMessage
-        {
-            get => _statusMessage;
-            set => SetProperty(ref _statusMessage, value);
-        }
-
-        public RelayCommand ConnectToTeklaCommand { get; }
-        public RelayCommand NavigateDashboardCommand { get; }
-        public RelayCommand NavigateDrawingCommand { get; }
-        public RelayCommand NavigateModellingCommand { get; }
-        public RelayCommand NavigateExportCommand { get; }
-        public RelayCommand NavigateSettingsCommand { get; }
-
-        public MainWindowViewModel()
-        {
-            NavigateDashboardCommand = new RelayCommand(() => CurrentView = new Views.DashboardView());
-            NavigateDrawingCommand   = new RelayCommand(() => CurrentView = new Views.DrawingView());
-            NavigateModellingCommand = new RelayCommand(() => CurrentView = new Views.ModellingView());
-            NavigateExportCommand    = new RelayCommand(() => CurrentView = new Views.TeklaExportView());
-            NavigateSettingsCommand  = new RelayCommand(() => CurrentView = new Views.SettingsView());
-
-            ConnectToTeklaCommand = new RelayCommand(ConnectToTekla);
-
-            CurrentView = new Views.DashboardView();
-        }
-
-        private void ConnectToTekla()
-        {
-            try
-            {
-                _logger.Info("Attempting to connect to Tekla...");
-                AddLog("Attempting to connect to Tekla...", LogType.Info);
-
-                if (_tekla.Connect())
-                {
-                    IsConnectedToTekla = true;
-                    StatusMessage = "Connected to Tekla";
-                    _logger.Success("Tekla connection established.");
-                    AddLog("Tekla connection established.", LogType.Success);
-                }
-                else
-                {
-                    IsConnectedToTekla = false;
-                    StatusMessage = "Connection failed";
-                    _logger.Error("Tekla connection failed.");
-                    AddLog("Tekla connection failed.", LogType.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                IsConnectedToTekla = false;
-                StatusMessage = "Connection error";
-                _logger.Error("Unhandled exception during connect", ex);
-                AddLog($"Unhandled exception: {ex.Message}", LogType.Error);
-            }
-        }
-
-        private void AddLog(string message, LogType type) =>
-            LogMessages.Add(new LogEntry(message, type));
-    }
-}
-'@ | Set-Content -Path "$ui/ViewModels/MainWindowViewModel.cs" -Encoding UTF8
-
-          # --- Placeholder Views (5) ---
-          $viewTemplate = @'
-<UserControl x:Class="{0}"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             MinHeight="400" MinWidth="400">
-  <Grid>
-    <TextBlock Text="{1}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-  </Grid>
-</UserControl>
-'
-          $views = @(
-            @{Class='TeklaAI.UI.Views.DashboardView'; File='DashboardView.xaml'; Title='Dashboard';},
-            @{Class='TeklaAI.UI.Views.DrawingView';   File='DrawingView.xaml';   Title='Drawing (GA/Assembly/SP) - Placeholder';},
-            @{Class='TeklaAI.UI.Views.ModellingView'; File='ModellingView.xaml'; Title='Modelling - Placeholder';},
-            @{Class='TeklaAI.UI.Views.TeklaExportView'; File='TeklaExportView.xaml'; Title='Tekla Export - Placeholder';},
-            @{Class='TeklaAI.UI.Views.SettingsView';  File='SettingsView.xaml';  Title='Settings - Placeholder';}
-          )
-          foreach($v in $views){
-            $content = [string]::Format($viewTemplate, $v.Class, $v.Title)
-            $target = Join-Path "$ui/Views" $v.File
-            $content | Set-Content -Path $target -Encoding UTF8
-          }
-
-          # --- Ensure MaterialDesign packages in packages.config ---
-          $pkg = "$ui/packages.config"
-          if (-not (Test-Path $pkg)) {
-@'
-<?xml version="1.0" encoding="utf-8"?>
-<packages>
-  <package id="MaterialDesignColors" version="5.3.0" targetFramework="net48" />
-  <package id="MaterialDesignThemes" version="5.3.0" targetFramework="net48" />
-</packages>
-'@ | Set-Content -Path $pkg -Encoding UTF8
-          } else {
-            [xml]$xml = Get-Content $pkg
-            $ids = $xml.packages.package | ForEach-Object { $_.id }
-            if ($ids -notcontains 'MaterialDesignColors') {
-              $n = $xml.CreateElement('package'); $n.SetAttribute('id','MaterialDesignColors'); $n.SetAttribute('version','5.3.0'); $n.SetAttribute('targetFramework','net48'); $xml.packages.AppendChild($n) | Out-Null
-            }
-            if ($ids -notcontains 'MaterialDesignThemes') {
-              $n = $xml.CreateElement('package'); $n.SetAttribute('id','MaterialDesignThemes'); $n.SetAttribute('version','5.3.0'); $n.SetAttribute('targetFramework','net48'); $xml.packages.AppendChild($n) | Out-Null
-            }
-            $xml.Save($pkg)
-          }
-
-          # --- Update TeklaAI.UI.csproj (Add new items, remove old root MainWindow if present) ---
-          $csproj = Get-ChildItem $ui -Filter *.csproj | Select -First 1
-          if (-not $csproj) { Err "TeklaAI.UI.csproj not found."; exit 1 }
-
-          [xml]$proj = Get-Content $csproj.FullName
-          $ns = $proj.Project.NamespaceURI
-          $nsm = New-Object System.Xml.XmlNamespaceManager($proj.NameTable)
-          $nsm.AddNamespace('msb',$ns)
-
-          function Add-Item($name,$include,$meta=@{}){
-            $node = $proj.SelectSingleNode("//msb:$name[@Include='$include']", $nsm)
-            if ($node) { return }
-            $ig = $proj.CreateElement('ItemGroup',$ns)
-            $el = $proj.CreateElement($name,$ns)
-            $el.SetAttribute('Include',$include)
-            foreach($k in $meta.Keys){
-              $m = $proj.CreateElement($k,$ns); $m.InnerText = $meta[$k]; $el.AppendChild($m) | Out-Null
-            }
-            $ig.AppendChild($el) | Out-Null
-            $proj.Project.AppendChild($ig) | Out-Null
-          }
-
-          function Remove-Item($name,$include){
-            $node = $proj.SelectSingleNode("//msb:$name[@Include='$include']", $nsm)
-            if ($node -and $node.ParentNode){ $node.ParentNode.RemoveChild($node) | Out-Null }
-          }
-
-          # Remove old root MainWindow entries if they exist
-          Remove-Item Page    'MainWindow.xaml'
-          Remove-Item Compile 'MainWindow.xaml.cs'
-
-          # Add new pages
-          Add-Item Page 'Views\MainWindow.xaml'       @{Generator='MSBuild:Compile'; SubType='Designer'}
-          Add-Item Page 'Views\DashboardView.xaml'    @{Generator='MSBuild:Compile'; SubType='Designer'}
-          Add-Item Page 'Views\DrawingView.xaml'      @{Generator='MSBuild:Compile'; SubType='Designer'}
-          Add-Item Page 'Views\ModellingView.xaml'    @{Generator='MSBuild:Compile'; SubType='Designer'}
-          Add-Item Page 'Views\TeklaExportView.xaml'  @{Generator='MSBuild:Compile'; SubType='Designer'}
-          Add-Item Page 'Views\SettingsView.xaml'     @{Generator='MSBuild:Compile'; SubType='Designer'}
-
-          # Add code-behind & classes
-          Add-Item Compile 'Views\MainWindow.xaml.cs'         @{DependentUpon='MainWindow.xaml'}
-          Add-Item Compile 'ViewModels\BaseViewModel.cs'      @{}
-          Add-Item Compile 'ViewModels\MainWindowViewModel.cs'@{}
-          Add-Item Compile 'Helpers\RelayCommand.cs'          @{}
-          Add-Item Compile 'Helpers\LogEntry.cs'              @{}
-          Add-Item Compile 'Converters\BoolToStatusConverter.cs' @{}
-
-          $proj.Save($csproj.FullName)
-          Ok "Updated $($csproj.Name)"
-
-      - name: Commit and push changes
-        shell: bash
-        run: |
-          set -e
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Bootstrap TeklaAI.UI: Material Design + MVVM + Navigation + Logs"
-            git push origin HEAD:master
-          fi
+                  <!-- Left Nav -->
+                  <StackPanel DockPanel.Dock="Left" Width="220" Background="{DynamicResource MaterialDesignCardBackground}">
+                      <Button Content="Dashboard"      Command="{Binding NavigateDashboardCommand}" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
+                      <Button Content="Drawing"        Command="{Binding NavigateDrawingCommand}"   Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
+                      <Button Content="Modelling"      Command="{Binding NavigateModellingCommand}" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
+                      <Button Content="Tekla Export"   Command="{Binding NavigateExportCommand}"    Style="{DynamicResource MaterialDesignRaisedButton}" Margin="10"/>
