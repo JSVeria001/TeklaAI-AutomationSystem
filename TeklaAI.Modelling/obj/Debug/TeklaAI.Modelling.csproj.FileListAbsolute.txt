@@ -1,0 +1,13 @@
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\TeklaAI.Modelling.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\TeklaAI.Modelling.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\Newtonsoft.Json.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\TeklaAI.API.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\TeklaAI.Core.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\TeklaAI.API.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\TeklaAI.Core.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\bin\Debug\Newtonsoft.Json.xml
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\obj\Debug\TeklaAI.Modelling.csproj.AssemblyReference.cache
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\obj\Debug\TeklaAI.Modelling.csproj.CoreCompileInputs.cache
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\obj\Debug\TeklaAI..060944B7.Up2Date
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\obj\Debug\TeklaAI.Modelling.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Modelling\obj\Debug\TeklaAI.Modelling.pdb

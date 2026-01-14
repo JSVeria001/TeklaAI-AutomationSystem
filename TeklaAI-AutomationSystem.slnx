@@ -1,0 +1,17 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore.txt" />
+  </Folder>
+  <Project Path="TeklaAI.API/TeklaAI.API.csproj" Id="e92a3f78-58fd-4e3e-902c-3cb2695c34a5">
+    <Platform Solution="Release|x64" Project="x64" />
+  </Project>
+  <Project Path="TeklaAI.Core/TeklaAI.Core.csproj" Id="91546587-e944-4476-aaae-b77a0ddd59f0" />
+  <Project Path="TeklaAI.Drawing/TeklaAI.Drawing.csproj" Id="67e5bf41-fa2d-48e5-a390-d061d4c3a915" />
+  <Project Path="TeklaAI.Extraction/TeklaAI.Extraction.csproj" Id="716009b2-5335-47bf-befc-4ce14dc67dcc" />
+  <Project Path="TeklaAI.Modelling/TeklaAI.Modelling.csproj" Id="d54b1c81-57b5-4784-bf83-3778d88463b6" />
+  <Project Path="TeklaAI.UI/TeklaAI.UI.csproj" Id="c11aa41e-5f57-480a-8918-7caeaedd479e" />
+</Solution>

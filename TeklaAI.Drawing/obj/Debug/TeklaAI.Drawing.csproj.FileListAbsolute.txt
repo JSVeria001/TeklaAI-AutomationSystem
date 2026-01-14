@@ -1,0 +1,13 @@
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\TeklaAI.Drawing.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\TeklaAI.Drawing.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\Newtonsoft.Json.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\TeklaAI.API.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\TeklaAI.Core.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\TeklaAI.API.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\TeklaAI.Core.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\bin\Debug\Newtonsoft.Json.xml
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\obj\Debug\TeklaAI.Drawing.csproj.AssemblyReference.cache
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\obj\Debug\TeklaAI.Drawing.csproj.CoreCompileInputs.cache
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\obj\Debug\TeklaAI..1697D7E6.Up2Date
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\obj\Debug\TeklaAI.Drawing.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.Drawing\obj\Debug\TeklaAI.Drawing.pdb

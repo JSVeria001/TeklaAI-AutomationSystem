@@ -1,0 +1,10 @@
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\bin\Debug\TeklaAI.TestConsole.exe.config
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\bin\Debug\TeklaAI.TestConsole.exe
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\bin\Debug\TeklaAI.TestConsole.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\bin\Debug\TeklaAI.API.dll
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\bin\Debug\TeklaAI.API.pdb
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\obj\Debug\TeklaAI.TestConsole.csproj.AssemblyReference.cache
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\obj\Debug\TeklaAI.TestConsole.csproj.CoreCompileInputs.cache
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\obj\Debug\TeklaAI..6C99D026.Up2Date
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\obj\Debug\TeklaAI.TestConsole.exe
+D:\TEKLA Automation\TeklaAI-AutomationSystem\TeklaAI.TestConsole\obj\Debug\TeklaAI.TestConsole.pdb
